@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>每日 AI 發展新聞摘要網</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: sans-serif; text-align: center; }
+    table { margin: 20px auto; border-collapse: collapse; width: 90%; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    th { background-color: #3f6eb3; color: white; }
+    td { background-color: #f8f8f8; }
+  </style>
+</head>
+<body>
+  <h2>每日 AI 發展新聞摘要網</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>標題</th>
+        <th>摘要</th>
+        <th>URL</th>
+        <th>發布時間</th>
+      </tr>
+    </thead>
+    <tbody id="news-table"></tbody>
+  </table>
+
+  <script>
+    const SUPABASE_URL = "https://bzlsalcgsaiulsictace.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6bHNhbGNnc2FpdWxzaWN0YWNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNDI0MTAsImV4cCI6MjA3NDYxODQxMH0.GbOLa4F6auOWEYDeVC51jzkZE7tmwrBpY3pV1B1upkQ";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function loadData() {
+      const { data, error } = await supabase
+        .from('hw2_news')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      const table = document.getElementById('news-table');
+      table.innerHTML = "";
+
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.title}</td>
+          <td>${row.summary}</td>
+          <td><a href="${row.url}" target="_blank">連結</a></td>
+          <td>${new Date(row.created_at).toLocaleString()}</td>
+        `;
+        table.appendChild(tr);
+      });
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
